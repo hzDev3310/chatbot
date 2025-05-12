@@ -1,0 +1,49 @@
+@startuml
+
+class User {
+  - username: string
+  - email: string
+  - password: string
+  - role: string
+  - created_at: datetime
+  + save(): string
+  + {static} find_by_email(email: string): User
+  + {static} find_by_id(user_id: string): User
+  + {static} verify_password(stored_password: string, provided_password: string): boolean
+}
+
+class Conversation {
+  - user_id: ObjectId
+  - chat_id: string
+  - created_at: datetime
+  + save(): string
+  + {static} get_user_history(user_id: string): List<Conversation>
+  + {static} clear_history(user_id: string): void
+}
+
+class ChatInteraction {
+  - conversation_id: string
+  - prompt: string
+  - response: string
+  - sender_type: string
+  - created_at: datetime
+  + save(): string
+  + {static} get_chat_messages(conversation_id: string): List<ChatInteraction>
+  + {static} delete_chat_messages(conversation_id: string): void
+}
+
+class Rating {
+  - message_id: ObjectId
+  - rating_value: integer
+  - created_at: datetime
+  + save(): string
+  + {static} get_message_rating(message_id: string): List<Rating>
+  + {static} get_average_rating(message_id: string): float
+  + {static} delete_message_ratings(message_id: string): void
+}
+
+User "1" -- "*" Conversation : "user_id"
+Conversation "1" -- "*" ChatInteraction
+ChatInteraction "1" -- "*" Rating
+
+@enduml

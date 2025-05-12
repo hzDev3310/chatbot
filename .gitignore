@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment variables
+.env
+.env.*
+
+# Virtual Environment
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+
+# MongoDB
+*.mongodb
+
+# Logs
+*.log
+
+# Dataset
+*.csv
+
+# System Files
+.DS_Store
+Thumbs.db
