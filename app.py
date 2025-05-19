@@ -22,11 +22,21 @@ def login():
 
 # Chat routes
 @app.route('/chat/generate', methods=['POST'])
-@token_required
-def generate(current_user):
+def generate():
     try:
         data = request.get_json()
-        data['user_id'] = str(current_user['_id'])
+        auth_header = request.headers.get('Authorization')
+        
+        if auth_header and auth_header.startswith('Bearer '):
+            token = auth_header.split(' ')[1]
+            try:
+                user = jwt.decode(token, os.getenv('JWT_SECRET_KEY', 'asma'), algorithms=['HS256'])
+                data['user_id'] = str(user['user_id'])
+            except jwt.ExpiredSignatureError:
+                return jsonify({'error': 'Token has expired'}), 401
+            except jwt.InvalidTokenError:
+                return jsonify({'error': 'Invalid token'}), 401
+        
         return ChatController.generate_response(data)
     except Exception as e:
         return jsonify({'error': str(e)}), 500

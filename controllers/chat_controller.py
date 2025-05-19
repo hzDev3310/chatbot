@@ -8,25 +8,27 @@ class ChatController:
     @staticmethod
     def generate_response(data):
         try:
-            user_id = data.get('user_id')
             prompt = data.get('prompt')
-            chat_id = data.get('chat_id')
-            
-            if not user_id or not prompt:
-                return jsonify({'error': 'Missing required fields'}), 400
-
-            # Create or get conversation
-            if not chat_id:
-                conversation = Conversation(user_id)
-                conversation.save()
-                chat_id = conversation.chat_id
+            if not prompt:
+                return jsonify({'error': 'Prompt is required'}), 400
 
             # Generate AI response
             ai_response = generate_content(prompt)
 
-            # Save chat interaction
-            chat = ChatInteraction(chat_id, prompt, ai_response, 'user')
-            chat.save()
+            user_id = data.get('user_id')
+            chat_id = data.get('chat_id')
+            
+            # Save chat only if user is authenticated
+            if user_id:
+                # Create or get conversation
+                if not chat_id:
+                    conversation = Conversation(user_id)
+                    conversation.save()
+                    chat_id = conversation.chat_id
+
+                # Save chat interaction
+                chat = ChatInteraction(chat_id, prompt, ai_response, 'user')
+                chat.save()
 
             return jsonify({
                 'response': ai_response,
